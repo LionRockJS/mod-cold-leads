@@ -1,0 +1,24 @@
+{
+  "name": "@kohanajs/mod-cold-leads",
+  "version": "3.10.2",
+  "description": "The Form to Email Module for KohanaJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/kohana-js/proposals/level0/mod-cold-leads.git"
+  },
+  "keywords": [
+    "KohanaJS",
+    "Form"
+  ],
+  "author": "Kojin Nakana",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://gitlab.com/kohana-js/proposals/level0/mod-cold-leads/issues"
+  },
+  "homepage": "https://gitlab.com/kohana-js/proposals/level0/mod-cold-leads#readme",
+  "dependencies": {}
+}

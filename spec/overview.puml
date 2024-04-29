@@ -1,0 +1,16 @@
+@startuml
+skinparam Shadowing false
+
+title Lead Redemption
+start
+#000:<color:#FFF>Start Screen</color>;
+:Name, Phone<
+:send verification code;
+:Verification Code, Message, Consent, Consent Data Sharing<
+#000:<color:#FFF>Thank you message</color>;
+:click link on SMS;
+:QRcode;
+#000:<color:#FFF>Staff scan QR code to redeem</color>;
+end
+
+@enduml

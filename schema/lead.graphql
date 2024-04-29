@@ -1,0 +1,28 @@
+type LeadStates{
+    name: String
+}
+
+type LeadTypes{
+    name: String
+}
+
+type Leads {
+    language: String! @default(value: "zh-hant")
+    name: String!
+    contact_type:String
+    contact: String
+    consent: Boolean
+
+    utm_source: String
+    utm_medium: String
+    utm_campaign: String
+    utm_term: String
+    utm_content: String
+
+    ip:String
+    hostname:String
+    user_agent:String
+
+    associateTo1: LeadStates @default(value: 1)
+    associateTo2: LeadTypes @default(value: 1)
+}

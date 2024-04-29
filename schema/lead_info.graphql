@@ -1,0 +1,5 @@
+type LeadInfos{
+    email:String
+    phone:String
+    message:String
+}
