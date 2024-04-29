@@ -1,6 +1,6 @@
-const {ORM} = require('kohanajs');
+import { ORM } from '@lionrockjs/central';
 
-class LeadAction extends ORM{
+export default class LeadAction extends ORM{
   lead_id = null;
   name = null;
   ip = null;
@@ -16,5 +16,3 @@ class LeadAction extends ORM{
     ["payload", "String"]
   ]);
 }
-
-module.exports = LeadAction;

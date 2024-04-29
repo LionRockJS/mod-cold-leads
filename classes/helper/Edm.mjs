@@ -1,7 +1,7 @@
-const {KohanaJS} = require('kohanajs');
-const { Mail } = require('@kohanajs/mod-mail');
+import {Central} from '@lionrockjs/central';
+import {Mail} from '@lionrockjs/mod-mail';
 
-class HelperEdm {
+export default class HelperEdm {
   constructor(clientIP, landing, adapter = null) {
     this.mailer = new Mail({
       domain: landing,
@@ -11,7 +11,7 @@ class HelperEdm {
   }
 
   async send(recipient, instance, lead_info, type, token={}){
-    const config = KohanaJS.config.edm.mail;
+    const config = Central.config.edm.mail;
     const language = instance.language;
     const leadInfo = lead_info;
     const edmConfig = config[type];
@@ -45,5 +45,3 @@ class HelperEdm {
     });
   }
 }
-
-module.exports = HelperEdm;

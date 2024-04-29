@@ -1,9 +1,12 @@
-require('kohanajs').addNodeModule(__dirname);
-const ControllerLead = require('./classes/controller/Lead');
-const HelperEdm = require('./classes/helper/Edm');
-const HelperLead = require('./classes/helper/Lead');
+import url from "node:url";
+const dirname = url.fileURLToPath(new URL('.', import.meta.url)).replace(/\/$/, '');
+export default {dirname}
 
-module.exports = {
+import ControllerLead from './classes/controller/Lead.mjs';
+import HelperEdm from './classes/helper/Edm.mjs';
+import HelperLead from './classes/helper/Lead.mjs';
+
+export {
   ControllerLead,
   HelperEdm,
   HelperLead,

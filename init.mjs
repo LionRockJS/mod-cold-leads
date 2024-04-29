@@ -1,5 +1,6 @@
-const {KohanaJS} = require('kohanajs');
-KohanaJS.initConfig(new Map([
-  ['edm', require('./config/edm')],
-  ['lead', require('./config/lead')],
+import {Central} from '@lionrockjs/central';
+
+await Central.initConfig(new Map([
+  ['edm', await import('./config/edm.mjs')],
+  ['lead', await import('./config/lead.mjs')],
 ]));

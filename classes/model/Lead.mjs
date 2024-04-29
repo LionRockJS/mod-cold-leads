@@ -1,6 +1,6 @@
-const {ORM} = require('kohanajs');
+import { ORM } from '@lionrockjs/central';
 
-class Lead extends ORM{
+export default class Lead extends ORM{
   lead_state_id = 1;
   lead_type_id = 1;
   language = "zh-hant";
@@ -40,5 +40,3 @@ class Lead extends ORM{
     ["lead_type_id", "LeadType"]
   ]);
 }
-
-module.exports = Lead;

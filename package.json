@@ -1,24 +1,39 @@
 {
-  "name": "@kohanajs/mod-cold-leads",
-  "version": "3.10.2",
-  "description": "The Form to Email Module for KohanaJS",
+  "type": "module",
+  "name": "@lionrockjs/mod-cold-leads",
+  "version": "0.0.1",
+  "description": "The Form to Email Module for LionRockJS",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js --coverage"
+  },
+  "jest": {
+    "verbose": true,
+    "transform": {},
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/?(*.)+(spec|test).mjs"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "mjs"
+    ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/kohana-js/proposals/level0/mod-cold-leads.git"
+    "url": "git+https://github.com/LionRockJS/mod-cold-leads.git"
   },
   "keywords": [
-    "KohanaJS",
+    "LionRockJS",
     "Form"
   ],
   "author": "Kojin Nakana",
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/kohana-js/proposals/level0/mod-cold-leads/issues"
+    "url": "git+https://github.com/LionRockJS/mod-cold-leads/issues"
   },
-  "homepage": "https://gitlab.com/kohana-js/proposals/level0/mod-cold-leads#readme",
+  "homepage": "https://github.com/LionRockJS/mod-cold-leads#readme",
   "dependencies": {}
 }

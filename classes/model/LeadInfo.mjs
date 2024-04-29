@@ -1,6 +1,6 @@
-const {ORM} = require('kohanajs');
+import { ORM } from '@lionrockjs/central';
 
-class LeadInfo extends ORM{
+export default class LeadInfo extends ORM{
   email = null;
   phone = null;
   message = null;
@@ -14,5 +14,3 @@ class LeadInfo extends ORM{
     ["message", "String"]
   ]);
 }
-
-module.exports = LeadInfo;

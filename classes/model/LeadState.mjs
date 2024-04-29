@@ -1,6 +1,6 @@
-const {ORM} = require('kohanajs');
+import { ORM } from '@lionrockjs/central';
 
-class LeadState extends ORM{
+export default class LeadState extends ORM{
   name = null;
 
   static joinTablePrefix = 'lead_state';
@@ -13,5 +13,3 @@ class LeadState extends ORM{
     ["lead_state_id", "Lead"]
   ];
 }
-
-module.exports = LeadState;

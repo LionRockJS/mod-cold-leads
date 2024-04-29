@@ -1,16 +1,20 @@
-const {Controller} = require("@kohanajs/core-mvc");
-const {ControllerMixinORMInput, ControllerMixinORMWrite} = require('@kohanajs/mixin-orm');
-const {ControllerMixinMultipartForm} = require('@kohanajs/mod-form');
-const {ControllerMixinMime, ControllerMixinView, ControllerMixinDatabase, KohanaJS, ORM} = require("kohanajs");
-const ControllerMixinRecaptcha = require('../controller-mixin/Recaptcha');
+import {Controller} from "@lionrockjs/mvc";
+import {ControllerMixinORMRead, ControllerMixinORMInput, ControllerMixinORMWrite} from "@lionrockjs/mixin-orm";
+import {ControllerMixinMultipartForm} from "@lionrockjs/mod-form";
+import {ControllerMixinMime, ControllerMixinView, ControllerMixinDatabase, Central, ORM} from "@lionrockjs/central";
 
-const Lead = ORM.require('Lead');
-const LeadInfo = ORM.require('LeadInfo');
-const LeadAction = ORM.require('LeadAction');
-const HelperEdm = require('../helper/Edm');
+import ControllerMixinRecaptcha from '../controller-mixin/Recaptcha.mjs';
+import HelperEdm from '../helper/Edm.mjs';
+
+import DefaultLead from '../model/Lead.mjs';
+const Lead = await ORM.import('Lead', DefaultLead);
+import DefaultLeadInfo from '../model/LeadInfo.mjs';
+const LeadInfo = await ORM.import('LeadInfo', DefaultLeadInfo);
+import DefaultLeadAction from '../model/LeadAction.mjs';
+const LeadAction = await ORM.import('LeadAction', DefaultLeadAction);
 
 
-class ControllerLead extends Controller{
+export default class ControllerLead extends Controller{
   static mixins = [...Controller.mixins,
     ControllerMixinMime,
     ControllerMixinView,
@@ -34,20 +38,19 @@ class ControllerLead extends Controller{
       ]),
       ...options };
 
-    this.model = Lead;
-
+    this.state.set(ControllerMixinORMRead.MODEL, Lead);
     this.state.get(ControllerMixinDatabase.DATABASE_MAP)
-      .set('lead', KohanaJS.config.setup.databaseFolder+'/lead.sqlite')
-      .set('lead_info', KohanaJS.config.setup.databaseFolder+'/lead_info.sqlite')
-      .set('lead_action', KohanaJS.config.setup.databaseFolder+'/lead_action.sqlite')
-      .set('mail', KohanaJS.config.setup.databaseFolder+'/mail.sqlite');
+      .set('lead', Central.config.setup.databaseFolder+'/lead.sqlite')
+      .set('lead_info', Central.config.setup.databaseFolder+'/lead_info.sqlite')
+      .set('lead_action', Central.config.setup.databaseFolder+'/lead_action.sqlite')
+      .set('mail', Central.config.setup.databaseFolder+'/mail.sqlite');
 
     this.state.set(ControllerMixinORMWrite.DATABASE_KEY, 'lead');
   }
 
-  async action_index(){
+  async action_index() {
     const $_GET = this.state.get(ControllerMixinMultipartForm.GET_DATA);
-    const country = this.request.headers['cf-ipcountry'] || 'HK'
+    const country = this.state.get(Controller.STATE_HEADERS)['cf-ipcountry'] || 'HK'
 
     Object.assign(
       this.state.get(ControllerMixinView.LAYOUT).data,
@@ -59,17 +62,18 @@ class ControllerLead extends Controller{
       }
     )
 
-    this.setTemplate(this.options.templates.get('index'), {
+    ControllerMixinView.setTemplate(this.state, this.options.templates.get('index'), {
       country: country,
-      utm_source:   encodeURIComponent($_GET['utm_source']   || ""),
-      utm_medium:   encodeURIComponent($_GET['utm_medium']   || ""),
+      utm_source: encodeURIComponent($_GET['utm_source'] || ""),
+      utm_medium: encodeURIComponent($_GET['utm_medium'] || ""),
       utm_campaign: encodeURIComponent($_GET['utm_campaign'] || ""),
-      utm_term:     encodeURIComponent($_GET['utm_term']     || ""),
-      utm_content:  encodeURIComponent($_GET['utm_content']  || ""),});
+      utm_term: encodeURIComponent($_GET['utm_term'] || ""),
+      utm_content: encodeURIComponent($_GET['utm_content'] || ""),
+    });
   }
 
   async isActivated(){
-    if(KohanaJS.config.lead.blockActivatedLeads !== true)return true;
+    if(Central.config.lead.blockActivatedLeads !== true)return true;
     const $_POST = this.state.get(ControllerMixinMultipartForm.POST_DATA);
     const databases = this.state.get(ControllerMixinDatabase.DATABASES);
     const database = databases.get('lead');
@@ -89,7 +93,7 @@ class ControllerLead extends Controller{
   async action_verify() {
     const isActivated = await this.isActivated();
     if(!isActivated){
-      await this.redirect(`/${this.language}/registration/duplicate`);
+      await this.redirect(`/${this.state.get(Controller.STATE_LANGUAGE)}/registration/duplicate`);
       return;
     }
 
@@ -102,24 +106,24 @@ class ControllerLead extends Controller{
   }
 
   async action_thank_you_json(){
-    this.body = {
+    this.state.set(Controller.STATE_BODY, {
       type: "REGISTER",
       payload: {success: true}
-    };
+    });
   }
 
   async action_duplicate(){
-    this.setTemplate(this.options.templates.get('duplicate'));
+    ControllerMixinView.setTemplate(this.state, this.options.templates.get('duplicate'));
   }
 
   async action_duplicate_json(){
-    this.body = {
+    this.state.set(Controller.STATE_BODY, {
       type: "REGISTER_CONTACT_ALREADY_ACTIVATE",
       error: true,
       payload: {
         message: "Registration duplicated"
       }
-    };
+    });
   }
 
   async add_members(){
@@ -133,7 +137,7 @@ class ControllerLead extends Controller{
       const values = $_POST['.members'+id];
 
       const props = {
-        language: this.language,
+        language: this.state.get(Controller.STATE_LANGUAGE),
         ip: parent.ip,
         hostname: parent.hostname,
         user_agent: parent.user_agent,
@@ -175,7 +179,7 @@ class ControllerLead extends Controller{
   async action_update(){
     const isActivated = await this.isActivated();
     if(!isActivated){
-      await this.redirect(`/${this.language}/registration/duplicate`);
+      await this.redirect(`/${this.state.get(Controller.STATE_LANGUAGE)}/registration/duplicate`);
       return;
     }
 
@@ -186,9 +190,9 @@ class ControllerLead extends Controller{
 
     const instance = await ORM.factory(Lead, lead_id,{database: databases.get('lead')});
 
-    instance.ip = this.clientIP;
-    instance.hostname = this.request.hostname;
-    instance.user_agent = this.request.headers['user-agent'];
+    instance.ip = this.state.get(Controller.STATE_CLIENT_IP);
+    instance.hostname = this.state.get(Controller.STATE_HOSTNAME);
+    instance.user_agent = this.state.get(Controller.STATE_HEADERS)['user-agent'];
     if(instance.contact_type === 'phone'){
       //check contact start with + sign
       if(!instance.contact.startsWith('+')){
@@ -224,7 +228,7 @@ class ControllerLead extends Controller{
     }
 
     if(postAction === 'save'){
-      await this.redirect($_POST.destination || `/${this.language}/registration/${instance.id}`);
+      await this.redirect($_POST.destination || `/${this.state.get(Controller.STATE_LANGUAGE)}/registration/${instance.id}`);
       return;
     }
 
@@ -232,29 +236,29 @@ class ControllerLead extends Controller{
     //verified lead
 
     const helperEdm = new HelperEdm(
-      this.clientIP,
-      this.request.hostname
+      this.state.get(Controller.STATE_CLIENT_IP),
+      this.state.get(Controller.STATE_HOSTNAME)
     );
 
     const helperSMS = new HelperEdm(
-      this.clientIP,
-      this.request.hostname,
-      KohanaJS.config.lead.smsAdapter
+      this.state.get(Controller.STATE_CLIENT_IP),
+      this.state.get(Controller.STATE_HOSTNAME),
+      Central.config.lead.smsAdapter
     );
 
     const{
       edmTypeGreeting,
       edmTypeGreetingSMS,
       greetingToken
-    } = await KohanaJS.config.lead.greetingHandler(instance);
+    } = await Central.config.lead.greetingHandler(instance);
 
     try{
       const contact = await ControllerLead.send_greeting(instance, info, helperSMS, helperEdm, edmTypeGreeting, edmTypeGreetingSMS, greetingToken);
       const tokenEmail = info.email || contact;
-      await helperEdm.send(KohanaJS.config.edm.mail.admin, instance, info, 'notification', {
+      await helperEdm.send(Central.config.edm.mail.admin, instance, info, 'notification', {
         title: instance.salutation,
         email : tokenEmail.replaceAll('.', '<span>.</span>'),
-        agent : this.request.headers['user-agent'],
+        agent : this.state.get(Controller.STATE_HEADERS)['user-agent'],
       });
     }catch(e){
       this.setTemplate(this.options.templates.get('error'), {message: e.message});
@@ -263,7 +267,7 @@ class ControllerLead extends Controller{
       return;
     }
 
-    await this.redirect($_POST.destination || `/${this.language}/registration/thank-you?lead_id=${instance.id}`);
+    await this.redirect($_POST.destination || `/${this.state.get(Controller.STATE_LANGUAGE)}/registration/thank-you?lead_id=${instance.id}`);
   }
 
   //dynamic greeting type for multiple greeting template
@@ -293,5 +297,3 @@ class ControllerLead extends Controller{
     return contact;
   }
 }
-
-module.exports = ControllerLead;

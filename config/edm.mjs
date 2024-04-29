@@ -1,26 +1,26 @@
-const {KohanaJS} = require('kohanajs');
+import { Central } from '@lionrockjs/central';
 
 function getAdmin(){
-  switch (KohanaJS.ENV){
-    case KohanaJS.ENV_STAG:
-    case KohanaJS.ENV_PROD:
+  switch (Central.ENV){
+    case Central.ENV_STAG:
+    case Central.ENV_PROD:
       return "admin@example.com";
-    case KohanaJS.ENV_TEST:
+    case Central.ENV_TEST:
       return "uat-admin@example.com";
-    case KohanaJS.ENV_DEVE:
+    case Central.ENV_DEVE:
     default:
       return "developer@example.com";
   }
 }
 
 function getBCC(){
-  switch (KohanaJS.ENV){
-    case KohanaJS.ENV_STAG:
-    case KohanaJS.ENV_PROD:
+  switch (Central.ENV){
+    case Central.ENV_STAG:
+    case Central.ENV_PROD:
       return "staff@example.com";
-    case KohanaJS.ENV_TEST:
+    case Central.ENV_TEST:
       return "staff-test@example.com";
-    case KohanaJS.ENV_DEVE:
+    case Central.ENV_DEVE:
     default:
       return "staff-developer@example.com";
   }
@@ -30,8 +30,8 @@ module.exports ={
   mail: {
     admin: getAdmin(),
     bcc: getBCC(),
-    sender: 'KohanaJS <do-not-reply@kohanajs.com>',
-    templatePath : KohanaJS.APP_PATH + '/../public/media/edm',
+    sender: 'LionRockJS <do-not-reply@lionrockjs.com>',
+    templatePath : Central.APP_PATH + '/../public/media/edm',
     defaultLanguage: 'en',
 
     greeting: {
