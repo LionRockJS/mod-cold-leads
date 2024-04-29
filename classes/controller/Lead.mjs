@@ -1,9 +1,8 @@
 import {Controller} from "@lionrockjs/mvc";
 import {ControllerMixinORMRead, ControllerMixinORMInput, ControllerMixinORMWrite} from "@lionrockjs/mixin-orm";
-import {ControllerMixinMultipartForm} from "@lionrockjs/mod-form";
+import {ControllerMixinMultipartForm, ControllerMixinCaptcha} from "@lionrockjs/mod-form";
 import {ControllerMixinMime, ControllerMixinView, ControllerMixinDatabase, Central, ORM} from "@lionrockjs/central";
 
-import ControllerMixinRecaptcha from '../controller-mixin/Recaptcha.mjs';
 import HelperEdm from '../helper/Edm.mjs';
 
 import DefaultLead from '../model/Lead.mjs';
@@ -20,7 +19,7 @@ export default class ControllerLead extends Controller{
     ControllerMixinView,
     ControllerMixinDatabase,
     ControllerMixinMultipartForm,
-    ControllerMixinRecaptcha,
+    ControllerMixinCaptcha,
     ControllerMixinORMInput,
     ControllerMixinORMWrite,
   ]
@@ -46,6 +45,7 @@ export default class ControllerLead extends Controller{
       .set('mail', Central.config.setup.databaseFolder+'/mail.sqlite');
 
     this.state.set(ControllerMixinORMWrite.DATABASE_KEY, 'lead');
+    this.state.set(ControllerMixinCaptcha.CAPTCHA_ADAPTER, Central.config.lead.captchaAdapter);
   }
 
   async action_index() {

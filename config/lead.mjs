@@ -1,13 +1,11 @@
 import { MailAdapter } from "@lionrockjs/mod-mail";
+import { FormCaptchaAdapter } from "@lionrockjs/mod-form";
 
 export default {
   salt: "71da4035-e95e-4807-9921-9134fdd4202b",
   mailAdapter : MailAdapter,
   smsAdapter : MailAdapter,
-  recaptcha:{
-    site_key: "",
-    secret: "",
-  },
+  captchaAdapter: FormCaptchaAdapter,
   blockActivatedLeads: true,
   greetingHandler : async (lead) => {
     return {
