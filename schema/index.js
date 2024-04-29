@@ -3,7 +3,7 @@ const { build } = require('kohanajs-start');
 
 build(
   `${__dirname}/lead.graphql`,
-  `${__dirname}/lead.js`,
+  `${__dirname}/lead.mjs`,
   `${__dirname}/exports/lead.sql`,
   `${__dirname}/default/db/www/lead.sqlite`,
   path.normalize(`${__dirname}/../classes/model`)

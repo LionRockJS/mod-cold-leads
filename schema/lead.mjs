@@ -1,4 +1,4 @@
-module.exports = new Map([
+export default new Map([
   ['LeadStates', [
     {id: 1, name: 'pending'},
     {id: 2, name: 'reject'},
