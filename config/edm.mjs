@@ -26,7 +26,13 @@ function getBCC(){
   }
 }
 
-module.exports ={
+export default {
+  salutation : new Map([
+    ["en", new Map([["mr", "Mr."], ["mrs", "Mrs."], ["ms", "Ms."]])],
+    ["zh-hans", new Map([["mr", "先生"], ["mrs", "太太"], ["ms", "女士"]])],
+    ["zh-hant", new Map([["mr", "先生"], ["mrs", "太太"], ["ms", "女士"]])],
+  ]),
+
   mail: {
     admin: getAdmin(),
     bcc: getBCC(),
