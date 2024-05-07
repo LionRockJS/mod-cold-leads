@@ -1,5 +1,5 @@
 import { MailAdapter } from "@lionrockjs/mod-mail";
-import { FormCaptchaAdapter } from "@lionrockjs/mod-form";
+import { FormCaptchaAdapter } from "@lionrockjs/mixin-form";
 
 export default {
   salt: "71da4035-e95e-4807-9921-9134fdd4202b",

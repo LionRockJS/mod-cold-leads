@@ -1,6 +1,6 @@
 import {Controller} from "@lionrockjs/mvc";
 import {ControllerMixinORMRead, ControllerMixinORMInput, ControllerMixinORMWrite} from "@lionrockjs/mixin-orm";
-import {ControllerMixinMultipartForm, ControllerMixinCaptcha} from "@lionrockjs/mod-form";
+import {ControllerMixinMultipartForm, ControllerMixinCaptcha} from "@lionrockjs/mixin-form";
 import {ControllerMixinMime, ControllerMixinView, ControllerMixinDatabase, Central, ORM} from "@lionrockjs/central";
 
 import HelperEdm from '../helper/Edm.mjs';
