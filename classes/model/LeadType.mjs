@@ -1,6 +1,6 @@
-import { ORM } from '@lionrockjs/central';
+import { Model } from '@lionrockjs/central';
 
-export default class LeadType extends ORM{
+export default class LeadType extends Model{
   name = null;
 
   static joinTablePrefix = 'lead_type';

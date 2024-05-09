@@ -1,6 +1,6 @@
-import { ORM } from '@lionrockjs/central';
+import { Model } from '@lionrockjs/central';
 
-export default class Lead extends ORM{
+export default class Lead extends Model{
   lead_state_id = 1;
   lead_type_id = 1;
   language = "zh-hant";

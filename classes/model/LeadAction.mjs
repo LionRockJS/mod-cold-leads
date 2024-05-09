@@ -1,6 +1,6 @@
-import { ORM } from '@lionrockjs/central';
+import { Model } from '@lionrockjs/central';
 
-export default class LeadAction extends ORM{
+export default class LeadAction extends Model{
   lead_id = null;
   name = null;
   ip = null;
