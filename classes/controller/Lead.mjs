@@ -82,7 +82,7 @@ export default class ControllerLead extends Controller{
     // if register contact type is phone, optional contact area code may prepend.
     const lead = await ORM.readBy(Lead, 'contact', [
       $_POST[':contact'],
-      $_POST['contact_area_code'] + $_POST[':contact'],
+      ($_POST['contact_area_code'] || Central.config.lead.defaultCountryCode) + $_POST[':contact'],
     ], {database, asArray: true});
 
     //loop all leads and check if any of them is activated

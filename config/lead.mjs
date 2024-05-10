@@ -4,6 +4,7 @@ import Central from "@lionrockjs/central";
 
 export default {
   salt: "71da4035-e95e-4807-9921-9134fdd4202b",
+  defaultCountryCode: "+852",
   mailAdapter : MailAdapter,
   smsAdapter : MailAdapter,
   captchaAdapter: FormCaptchaAdapter,
