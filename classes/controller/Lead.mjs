@@ -39,10 +39,10 @@ export default class ControllerLead extends Controller{
 
     this.state.set(ControllerMixinORMRead.MODEL, Lead);
     this.state.get(ControllerMixinDatabase.DATABASE_MAP)
-      .set('lead', Central.config.setup.databaseFolder+'/lead.sqlite')
-      .set('lead_info', Central.config.setup.databaseFolder+'/lead_info.sqlite')
-      .set('lead_action', Central.config.setup.databaseFolder+'/lead_action.sqlite')
-      .set('mail', Central.config.setup.databaseFolder+'/mail.sqlite');
+      .set('lead', Central.config.lead.databasePath+'/lead.sqlite')
+      .set('lead_info', Central.config.lead.databasePath+'/lead_info.sqlite')
+      .set('lead_action', Central.config.lead.databasePath+'/lead_action.sqlite')
+      .set('mail', Central.config.lead.databasePath+'/mail.sqlite');
 
     this.state.set(ControllerMixinORMWrite.DATABASE_KEY, 'lead');
     this.state.set(ControllerMixinCaptcha.CAPTCHA_ADAPTER, Central.config.lead.captchaAdapter);
@@ -98,11 +98,11 @@ export default class ControllerLead extends Controller{
     }
 
     const $_POST = this.state.get(ControllerMixinMultipartForm.POST_DATA);
-    this.setTemplate(this.options.templates.get('verify'), {postData: $_POST});
+    ControllerMixinView.setTemplate(this.state, this.options.templates.get('verify'), {postData: $_POST});
   }
 
   async action_thank_you(){
-    this.setTemplate(this.options.templates.get('thank_you'));
+    ControllerMixinView.setTemplate(this.options.templates.get('thank_you'));
   }
 
   async action_thank_you_json(){
@@ -186,9 +186,8 @@ export default class ControllerLead extends Controller{
     const $_POST = this.state.get(ControllerMixinMultipartForm.POST_DATA);
 
     const databases = this.state.get(ControllerMixinDatabase.DATABASES);
-    const lead_id = this.state.get('instance').id;
-
-    const instance = await ORM.factory(Lead, lead_id,{database: databases.get('lead')});
+    const instance = this.state.get(ControllerMixinORMRead.INSTANCE);
+    const lead_id = instance.id;
 
     instance.ip = this.state.get(Controller.STATE_CLIENT_IP);
     instance.hostname = this.state.get(Controller.STATE_HOSTNAME);
@@ -205,13 +204,19 @@ export default class ControllerLead extends Controller{
     //store attributes to info
     const info = ORM.create(LeadInfo, {database: databases.get('lead_info'), insertID: instance.id})
     const attributes = $_POST['attributes'];
+
     if(attributes){
       delete attributes.id;
       delete attributes.created_at;
       delete attributes.updated_at;
       delete attributes.uuid;
       Object.assign(info, attributes);
-      await info.write();
+      try{
+        await info.write();
+      }catch(e){
+        Central.log(e);
+      }
+
       instance.lead_infos = [attributes];
     }
 
@@ -261,7 +266,7 @@ export default class ControllerLead extends Controller{
         agent : this.state.get(Controller.STATE_HEADERS)['user-agent'],
       });
     }catch(e){
-      this.setTemplate(this.options.templates.get('error'), {message: e.message});
+      ControllerMixinView.setTemplate(this.state, this.options.templates.get('error'), {message: e.message});
       await info.delete();
       await instance.delete();
       return;
