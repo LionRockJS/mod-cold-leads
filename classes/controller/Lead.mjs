@@ -189,11 +189,11 @@ export default class ControllerLead extends Controller{
 
     const databases = this.state.get(ControllerMixinDatabase.DATABASES);
     const instance = this.state.get(ControllerMixinORMRead.INSTANCE);
-    const lead_id = instance.id;
 
     instance.ip = this.state.get(Controller.STATE_CLIENT_IP);
     instance.hostname = this.state.get(Controller.STATE_HOSTNAME);
-    instance.user_agent = this.state.get(Controller.STATE_HEADERS)['user-agent'];
+    instance.user_agent = this.state.get(Controller.STATE_USER_AGENT);
+
     if(instance.contact_type === 'phone'){
       //check contact start with + sign
       if(!instance.contact.startsWith('+')){
