@@ -266,7 +266,7 @@ export default class ControllerLead extends Controller{
       await helperEdm.send(Central.config.edm.mail.admin, instance, info, 'notification', {
         title: instance.salutation,
         email : tokenEmail.replaceAll('.', '<span>.</span>'),
-        agent : this.state.get(Controller.STATE_HEADERS)['user-agent'],
+        agent : this.state.get(Controller.STATE_USER_AGENT),
       });
     }catch(e){
       ControllerMixinView.setTemplate(this.state, this.options.templates.get('error'), {message: e.message});
