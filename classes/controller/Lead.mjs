@@ -24,6 +24,8 @@ export default class ControllerLead extends Controller{
     ControllerMixinORMWrite,
   ]
 
+  static STATE_
+
   constructor(request, options = {}){
     super(request);
 
@@ -217,7 +219,7 @@ export default class ControllerLead extends Controller{
         Central.log(e);
       }
 
-      instance.lead_infos = [attributes];
+      instance.lead_info = info.id ? info : attributes;
     }
 
     const postAction = $_POST['action'];
@@ -242,7 +244,8 @@ export default class ControllerLead extends Controller{
 
     const helperEdm = new HelperEdm(
       this.state.get(Controller.STATE_CLIENT_IP),
-      this.state.get(Controller.STATE_HOSTNAME)
+      this.state.get(Controller.STATE_HOSTNAME),
+      Central.config.lead.mailAdapter
     );
 
     const helperSMS = new HelperEdm(
