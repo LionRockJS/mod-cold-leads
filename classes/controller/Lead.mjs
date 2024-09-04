@@ -22,9 +22,7 @@ export default class ControllerLead extends Controller{
     ControllerMixinCaptcha,
     ControllerMixinORMInput,
     ControllerMixinORMWrite,
-  ]
-
-  static STATE_
+  ];
 
   constructor(request, options = {}){
     super(request);
