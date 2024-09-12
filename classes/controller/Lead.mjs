@@ -224,6 +224,7 @@ export default class ControllerLead extends Controller{
     if(postAction){
       const action = ORM.create(LeadAction, {database: databases.get('lead_action')})
       action.name = postAction;
+      action.ip = this.state.get(Controller.STATE_CLIENT_IP);
       action.lead_id = instance.id;
       await action.write();
     }
