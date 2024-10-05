@@ -1,4 +1,5 @@
-import { RouteList, Central } from '@lionrockjs/central';
+import { Central } from '@lionrockjs/central';
+import { RouteList } from '@lionrockjs/router';
 
 RouteList.add(Central.config.language.route + '/registration/verify', 'controller/Lead', 'verify', 'POST');
 RouteList.add(Central.config.language.route + '/registration/create', 'controller/Lead', 'update', 'POST');
