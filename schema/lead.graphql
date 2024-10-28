@@ -22,6 +22,7 @@ type Leads {
     ip:String
     hostname:String
     user_agent:String
+    data:String
 
     associateTo1: LeadStates @default(value: 1)
     associateTo2: LeadTypes @default(value: 1)

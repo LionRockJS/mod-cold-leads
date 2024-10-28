@@ -1,31 +1,5 @@
+import 'dotenv/config';
 import { Central } from '@lionrockjs/central';
-
-function getAdmin(){
-  switch (Central.ENV){
-    case Central.ENV_STAG:
-    case Central.ENV_PROD:
-      return "admin@example.com";
-    case Central.ENV_TEST:
-      return "uat-admin@example.com";
-    case Central.ENV_DEVE:
-    default:
-      return "developer@example.com";
-  }
-}
-
-function getBCC(){
-  switch (Central.ENV){
-    case Central.ENV_STAG:
-    case Central.ENV_PROD:
-      return "staff@example.com";
-    case Central.ENV_TEST:
-      return "staff-test@example.com";
-    case Central.ENV_DEVE:
-    default:
-      return "staff-developer@example.com";
-  }
-}
-
 export default {
   salutation : new Map([
     ["en", new Map([["mr", "Mr."], ["mrs", "Mrs."], ["ms", "Ms."]])],
@@ -34,9 +8,9 @@ export default {
   ]),
 
   mail: {
-    admin: getAdmin(),
-    bcc: getBCC(),
-    sender: 'LionRockJS <do-not-reply@lionrockjs.com>',
+    admin: process.env.EMAIL_ADMIN || 'developer@example.com',
+    bcc: process.env.EMAIL_BCC || 'staff-developer@example.com',
+    sender: process.env.EMAIL_SENDER || 'LionRockJS <do-not-reply@lionrockjs.com>',
     templatePath : Central.APP_PATH + '/../public/media/edm',
     defaultLanguage: 'en',
 
@@ -49,7 +23,7 @@ export default {
       text: new Map([
         ['en', 'We are delighted to confirm that we have received your request to find out more about Us. Our team will be in touch shortly.'],
         ['zh-hans', '我们很高兴地通知您，您的相关请求已被受理。 我们的团队将很快与您联系。'],
-        ['zh-hant', '我們很高興地通知您，您的相關請求已被受理。我們的團隊將很快與您聯繫。']
+        ['zh-hant', '我們很高興地通知您，您的相關請求已被受理。我們的團隊將很快與您聯絡。']
       ]),
       html: new Map([
         ['en', 'en/thankyou.html'],
@@ -67,7 +41,7 @@ export default {
       text: new Map([
         ['en', 'We are delighted to confirm that we have received your request to find out more about Us. Our team will be in touch shortly.'],
         ['zh-hans', '我们很高兴地通知您，您的相关请求已被受理。 我们的团队将很快与您联系。'],
-        ['zh-hant', '我們很高興地通知您，您的相關請求已被受理。我們的團隊將很快與您聯繫。']
+        ['zh-hant', '我們很高興地通知您，您的相關請求已被受理。我們的團隊將很快與您聯絡。']
       ]),
     },
 

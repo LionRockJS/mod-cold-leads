@@ -14,6 +14,9 @@ const LeadAction = await ORM.import('LeadAction', DefaultLeadAction);
 
 
 export default class ControllerLead extends Controller{
+  static STATE_CONFIG = 'leadConfig';
+  static STATE_CONFIG_EDM_MAIL = 'leadConfigEdmMail';
+
   static mixins = [...Controller.mixins,
     ControllerMixinMime,
     ControllerMixinView,
@@ -24,8 +27,8 @@ export default class ControllerLead extends Controller{
     ControllerMixinORMWrite,
   ];
 
-  constructor(request, options = {}){
-    super(request);
+  constructor(request, state, options = {}){
+    super(request, state);
 
     this.options = {
       templates: new Map([
@@ -46,6 +49,9 @@ export default class ControllerLead extends Controller{
 
     this.state.set(ControllerMixinORMWrite.DATABASE_KEY, 'lead');
     this.state.set(ControllerMixinCaptcha.CAPTCHA_ADAPTER, Central.config.lead.captchaAdapter);
+
+    this.state.set(ControllerLead.STATE_CONFIG, Object.assign({}, Central.config.lead));
+    this.state.set(ControllerLead.STATE_CONFIG_EDM_MAIL, Object.assign({}, Central.config.edm.mail));
   }
 
   async action_index() {
@@ -73,7 +79,9 @@ export default class ControllerLead extends Controller{
   }
 
   async isActivated(){
-    if(Central.config.lead.blockActivatedLeads !== true)return true;
+    const configLead = this.state.get(ControllerLead.STATE_CONFIG);
+
+    if(configLead.blockActivatedLeads !== true)return true;
     const $_POST = this.state.get(ControllerMixinMultipartForm.POST_DATA);
     const databases = this.state.get(ControllerMixinDatabase.DATABASES);
     const database = databases.get('lead');
@@ -82,7 +90,7 @@ export default class ControllerLead extends Controller{
     // if register contact type is phone, optional contact area code may prepend.
     const lead = await ORM.readBy(Lead, 'contact', [
       $_POST[':contact'],
-      ($_POST['contact_area_code'] || Central.config.lead.defaultCountryCode) + $_POST[':contact'],
+      ($_POST['contact_area_code'] || configLead.defaultCountryCode) + $_POST[':contact'],
     ], {database, asArray: true});
 
     //loop all leads and check if any of them is activated
@@ -102,7 +110,7 @@ export default class ControllerLead extends Controller{
   }
 
   async action_thank_you(){
-    ControllerMixinView.setTemplate(this.options.templates.get('thank_you'));
+    ControllerMixinView.setTemplate(this.state, this.options.templates.get('thank_you'));
   }
 
   async action_thank_you_json(){
@@ -240,29 +248,34 @@ export default class ControllerLead extends Controller{
 
     //check duplicate
     //verified lead
+    const configLead = this.state.get(ControllerLead.STATE_CONFIG);
 
     const helperEdm = new HelperEdm(
       this.state.get(Controller.STATE_CLIENT_IP),
       this.state.get(Controller.STATE_HOSTNAME),
-      Central.config.lead.mailAdapter
+      configLead.mailAdapter
     );
 
     const helperSMS = new HelperEdm(
       this.state.get(Controller.STATE_CLIENT_IP),
       this.state.get(Controller.STATE_HOSTNAME),
-      Central.config.lead.smsAdapter
+      configLead.smsAdapter
     );
 
     const{
       edmTypeGreeting,
       edmTypeGreetingSMS,
-      greetingToken
-    } = await Central.config.lead.greetingHandler(instance);
+      greetingToken,
+      edmTypeAdminNotification
+    } = await configLead.greetingHandler(instance);
 
+    const configEdmMail = this.state.get(ControllerLead.STATE_CONFIG_EDM_MAIL);
     try{
       const contact = await ControllerLead.send_greeting(instance, info, helperSMS, helperEdm, edmTypeGreeting, edmTypeGreetingSMS, greetingToken);
       const tokenEmail = info.email || contact;
-      await helperEdm.send(Central.config.edm.mail.admin, instance, info, 'notification', {
+
+
+      await helperEdm.send(configEdmMail.admin, instance, info, edmTypeAdminNotification, {
         title: instance.salutation,
         email : tokenEmail.replaceAll('.', '<span>.</span>'),
         agent : this.state.get(Controller.STATE_USER_AGENT),
