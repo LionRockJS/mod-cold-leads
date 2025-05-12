@@ -1,12 +1,12 @@
 import {Central} from '@lionrockjs/central';
-import {Mail} from '@lionrockjs/mod-mail';
+import {TemplateMail} from '@lionrockjs/mod-mail';
 
 export default class HelperEdm {
   constructor(clientIP, landing, adapter = null) {
-    this.mailer = new Mail({
+    this.mailer = new TemplateMail({
       domain: landing,
       ip: clientIP,
-      adapter : adapter || Mail.defaultMailAdapter,
+      adapter : adapter || TemplateMail.defaultMailAdapter,
     });
   }
 
