@@ -1,0 +1,17 @@
+{
+  "type": "module",
+  "private": true,
+  "name": "schema",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@lionrockjs/start": "^0.0.3",
+    "better-sqlite3": "^11.10.0"
+  }
+}

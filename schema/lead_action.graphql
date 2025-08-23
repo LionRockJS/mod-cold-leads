@@ -1,6 +1,0 @@
-type LeadActions{
-    lead_id: Int!
-    name: String!
-    ip: String!
-    payload: String
-}

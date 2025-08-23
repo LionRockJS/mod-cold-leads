@@ -7,11 +7,12 @@ type LeadTypes{
 }
 
 type Leads {
-    language: String! @default(value: "zh-hant")
+    language: String! @default(value: "mis")
     name: String!
     contact_type:String
     contact: String
     consent: Boolean
+    original: String
 
     utm_source: String
     utm_medium: String
@@ -22,8 +23,13 @@ type Leads {
     ip:String
     hostname:String
     user_agent:String
-    data:String
 
     associateTo1: LeadStates @default(value: 1)
     associateTo2: LeadTypes @default(value: 1)
+}
+
+type LeadTags{
+    belongsTo: Leads
+    tag_id: Int!
+    weight: Int @default(value: 5)
 }
