@@ -3,14 +3,11 @@ import {ControllerMixinORMRead, ControllerMixinORMInput, ControllerMixinORMWrite
 import {ControllerMixinMultipartForm, ControllerMixinCaptcha} from "@lionrockjs/mixin-form";
 import {ControllerMixinMime, ControllerMixinView, ControllerMixinDatabase, Central, ORM} from "@lionrockjs/central";
 
+import HelperPageEdit from '../helper/PageEdit.mjs';
 import HelperEdm from '../helper/Edm.mjs';
 
 import DefaultLead from '../model/Lead.mjs';
 const Lead = await ORM.import('Lead', DefaultLead);
-import DefaultLeadInfo from '../model/LeadInfo.mjs';
-const LeadInfo = await ORM.import('LeadInfo', DefaultLeadInfo);
-import DefaultLeadAction from '../model/LeadAction.mjs';
-const LeadAction = await ORM.import('LeadAction', DefaultLeadAction);
 
 
 export default class ControllerLead extends Controller{
@@ -43,8 +40,6 @@ export default class ControllerLead extends Controller{
     this.state.set(ControllerMixinORMRead.MODEL, Lead);
     this.state.get(ControllerMixinDatabase.DATABASE_MAP)
       .set('lead', Central.config.lead.databasePath+'/lead.sqlite')
-      .set('lead_info', Central.config.lead.databasePath+'/lead_info.sqlite')
-      .set('lead_action', Central.config.lead.databasePath+'/lead_action.sqlite')
       .set('mail', Central.config.lead.databasePath+'/mail.sqlite');
 
     this.state.set(ControllerMixinORMWrite.DATABASE_KEY, 'lead');
@@ -83,14 +78,13 @@ export default class ControllerLead extends Controller{
 
     if(configLead.blockActivatedLeads !== true)return true;
     const $_POST = this.state.get(ControllerMixinMultipartForm.POST_DATA);
-    const databases = this.state.get(ControllerMixinDatabase.DATABASES);
-    const database = databases.get('lead');
+    const database = this.state.get(ControllerMixinDatabase.DATABASES).get('lead');
 
     // check if contact is already registered
     // if register contact type is phone, optional contact area code may prepend.
     const lead = await ORM.readBy(Lead, 'contact', [
       $_POST[':contact'],
-      ($_POST['contact_area_code'] || configLead.defaultCountryCode) + $_POST[':contact'],
+      ($_POST['@contact_area_code'] || configLead.defaultCountryCode) + $_POST[':contact'],
     ], {database, asArray: true});
 
     //loop all leads and check if any of them is activated
@@ -138,11 +132,11 @@ export default class ControllerLead extends Controller{
     const databases = this.state.get(ControllerMixinDatabase.DATABASES);
 
     const $_POST = this.state.get(ControllerMixinMultipartForm.POST_DATA);
-    const memberIds = $_POST['.members'];
+    const memberIds = $_POST['members'];
     const parent = this.state.get('instance');
 
     await Promise.all(memberIds.map(async id =>{
-      const values = $_POST['.members'+id];
+      const values = $_POST['members'+id];
 
       const props = {
         language: this.state.get(Controller.STATE_LANGUAGE),
@@ -158,6 +152,7 @@ export default class ControllerLead extends Controller{
         utm_term: parent.utm_term,
         utm_content: parent.utm_content
       };
+      //todo, read postData to members
       const infos = {};
       Object.keys(values).forEach(key =>{
         if(/^_/.test(key)){
@@ -169,17 +164,9 @@ export default class ControllerLead extends Controller{
       if(!props.name)return;
 
       const lead = ORM.create(Lead, {database: databases.get('lead')});
+      //todo, parse postData to original then save
       Object.assign(lead, props);
       await lead.write();
-
-      const info = ORM.create(LeadInfo, {
-        database: databases.get('lead_info'),
-        insertID: lead.id
-      });
-      Object.assign(info, infos);
-      info.parent_id = String(parent.id);
-      await info.write();
-
     }));
   }
 
@@ -203,41 +190,31 @@ export default class ControllerLead extends Controller{
     if(instance.contact_type === 'phone'){
       //check contact start with + sign
       if(!instance.contact.startsWith('+')){
-        instance.contact = $_POST['contact_area_code'] + instance.contact;
+        instance.contact = $_POST['@contact_area_code'] + instance.contact;
       }
     }
 
-    await instance.write();
+    const original = JSON.parse(instance.original || '{}');
+    HelperPageEdit.mergeOriginals(original, HelperPageEdit.postToOriginal($_POST));
 
     //store attributes to info
-    const info = ORM.create(LeadInfo, {database: databases.get('lead_info'), insertID: instance.id})
-    const attributes = $_POST['attributes'];
-
-    if(attributes){
-      delete attributes.id;
-      delete attributes.created_at;
-      delete attributes.updated_at;
-      delete attributes.uuid;
-      Object.assign(info, attributes);
-      try{
-        await info.write();
-      }catch(e){
-        Central.log(e);
-      }
-
-      instance.lead_info = info.id ? info : attributes;
-    }
-
     const postAction = $_POST['action'];
+
     if(postAction){
-      const action = ORM.create(LeadAction, {database: databases.get('lead_action')})
-      action.name = postAction;
-      action.ip = this.state.get(Controller.STATE_CLIENT_IP);
-      action.lead_id = instance.id;
-      await action.write();
+      original.items.actions = original.items.actions || []
+      original.items.actions.push({
+        attributes: {
+          name: postAction,
+          ip: this.state.get(Controller.STATE_CLIENT_IP)
+        }
+      })
     }
 
-    if($_POST['.members']){
+    instance.original = JSON.stringify(original);
+    await instance.write();
+
+    //todo, parse postData to original then save
+    if($_POST['members']){
       await this.add_members();
     }
 
