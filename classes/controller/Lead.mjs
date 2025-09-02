@@ -190,15 +190,20 @@ export default class ControllerLead extends Controller{
     if(instance.contact_type === 'phone'){
       //check contact start with + sign
       if(!instance.contact.startsWith('+')){
-        instance.contact = $_POST['@contact_area_code'] + instance.contact;
+        instance.contact = $_POST['@area_code'] + instance.contact;
       }
     }
 
-    const original = JSON.parse(instance.original || '{}');
-    HelperPageEdit.mergeOriginals(original, HelperPageEdit.postToOriginal($_POST));
+    const postOriginal = HelperPageEdit.postToOriginal($_POST);
+    const original = HelperPageEdit.mergeOriginals(JSON.parse(instance.original || '{}'), postOriginal);;
 
     //store attributes to info
     const postAction = $_POST['action'];
+    const info = {
+      email: $_POST['@email'],
+      area_code: $_POST['@area_code'],
+      phone: $_POST['@phone'],
+    }
 
     if(postAction){
       original.items.actions = original.items.actions || []
@@ -258,8 +263,8 @@ export default class ControllerLead extends Controller{
         agent : this.state.get(Controller.STATE_USER_AGENT),
       });
     }catch(e){
+      console.log(e)
       ControllerMixinView.setTemplate(this.state, this.options.templates.get('error'), {message: e.message});
-      await info.delete();
       await instance.delete();
       return;
     }
