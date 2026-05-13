@@ -1,8 +1,9 @@
+import { FormCaptchaAdapter } from "@lionrockjs/mixin-form";
 declare const _default: {
     defaultCountryCode: string;
     mailAdapter: any;
     smsAdapter: any;
-    captchaAdapter: any;
+    captchaAdapter: typeof FormCaptchaAdapter;
     blockActivatedLeads: boolean;
     databasePath: string;
     greetingHandler: (lead: any) => Promise<{
