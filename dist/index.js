@@ -1,6 +1,10 @@
+import ConfigEdm from './config/edm.mjs';
+import ConfigLead from './config/lead.mjs';
 export default {
-    filename: import.meta.url,
-    configs: ['edm', 'lead']
+    configs: {
+        edm: ConfigEdm,
+        lead: ConfigLead,
+    }
 };
 import ControllerLead from '../classes/controller/Lead.mjs';
 import HelperEdm from '../classes/helper/Edm.mjs';

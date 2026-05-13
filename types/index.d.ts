@@ -1,6 +1,45 @@
 declare const _default: {
-    filename: string;
-    configs: string[];
+    configs: {
+        edm: {
+            salutation: Map<string, Map<string, string>>;
+            mail: {
+                admin: string;
+                bcc: string;
+                sender: string;
+                templatePath: string;
+                defaultLanguage: string;
+                greeting: {
+                    subject: Map<string, string>;
+                    text: Map<string, string>;
+                    html: Map<string, string>;
+                };
+                greeting_sms: {
+                    subject: Map<string, string>;
+                    text: Map<string, string>;
+                };
+                notification: {
+                    subject: Map<string, string>;
+                    text: Map<string, string>;
+                    html: Map<string, string>;
+                };
+            };
+        };
+        lead: {
+            defaultCountryCode: string;
+            mailAdapter: any;
+            smsAdapter: any;
+            captchaAdapter: typeof import("@lionrockjs/mixin-form").FormCaptchaAdapter;
+            blockActivatedLeads: boolean;
+            databasePath: string;
+            greetingHandler: (lead: any) => Promise<{
+                leadName: any;
+                edmTypeGreeting: string;
+                edmTypeGreetingSMS: string;
+                edmTypeAdminNotification: string;
+                greetingToken: {};
+            }>;
+        };
+    };
 };
 export default _default;
 import ControllerLead from '../classes/controller/Lead.mjs';

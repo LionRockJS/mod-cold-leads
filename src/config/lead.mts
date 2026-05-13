@@ -8,7 +8,7 @@ export default {
   smsAdapter : MailAdapter,
   captchaAdapter: FormCaptchaAdapter,
   blockActivatedLeads: true,
-  databasePath: `${Central.EXE_PATH}/../database`,
+  databasePath: 'database',
 
   greetingHandler : async (lead: any) => {
     return {

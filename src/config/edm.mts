@@ -12,7 +12,7 @@ export default {
     admin: process.env.EMAIL_ADMIN || 'developer@example.com',
     bcc: process.env.EMAIL_BCC || 'staff-developer@example.com',
     sender: process.env.EMAIL_SENDER || 'LionRockJS <do-not-reply@lionrockjs.com>',
-    templatePath : Central.APP_PATH + '/../public/media/edm',
+    templatePath : 'public/media/edm',
     defaultLanguage: 'en',
 
     greeting: {
